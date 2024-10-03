@@ -16,4 +16,15 @@ namespace ImageHosting.Models
         public int ProjectID { get; set; }
 
     }
+    public class ImagesDto
+    {
+        public int ImageID { get; set; }
+        public DateTime UploadedAt { get; set; }
+        public required string FileName { get; set; }
+        public int ProjectID { get; set; }
+
+        //Optional Properties to show URL and Project it belongs to
+        public string? FileUrl { get; set; }
+        public string? ProjectName { get; set; }
+    }
 }

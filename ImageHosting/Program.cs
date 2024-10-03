@@ -1,6 +1,9 @@
 using ImageHosting.Data;
 using Microsoft.AspNetCore.Identity;
+using ImageHosting.Interface;
+using ImageHosting.Services;
 using Microsoft.EntityFrameworkCore;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,12 +22,17 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddScoped<IProjectService, ProjectService>();
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 else
 {
@@ -40,8 +48,6 @@ app.UseRouting();
 
 app.UseAuthorization();
 
-app.UseSwagger();
-app.UseSwaggerUI();
 
 app.MapControllerRoute(
     name: "default",

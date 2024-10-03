@@ -16,7 +16,7 @@ namespace ImageHosting.Models
 
     public class UploaderDto
     {
-        public int? UploaderID { get; set; }
+        public int UploaderID { get; set; }
         public required string UploaderName { get; set; }
         public required string UploaderEmail { get; set; }
     }

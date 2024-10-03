@@ -18,4 +18,14 @@ namespace ImageHosting.Models
         //A project can have many items
         public ICollection<Images>? Images { get; set; }
     }
+    public class ProjectDto
+    {
+        public int ProjectId { get; set; }
+        public string ProjectName { get; set; }
+        public string ProjectDescription { get; set; }
+
+        public DateTime CreatedAt { get; set; }
+
+        public int UploaderId { get; set; }
+    }
 }
