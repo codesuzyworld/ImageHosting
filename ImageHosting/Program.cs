@@ -22,7 +22,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+//Just registering the services here
 builder.Services.AddScoped<IProjectService, ProjectService>();
+builder.Services.AddScoped<ImagesService>();
 
 
 var app = builder.Build();

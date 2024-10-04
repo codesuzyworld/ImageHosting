@@ -178,5 +178,19 @@ namespace ImageHosting.Controllers
             IEnumerable<ProjectDto> ProjectDtos = await _projectService.ListProjectsForUploader(uploaderId);
             return Ok(ProjectDtos);
         }
+
+        [HttpGet(template: "ListForProject/{projectId}")]
+        public async Task<ActionResult<IEnumerable<ImagesDto>>> ListImagesForProject(int projectId)
+        {
+            var images = await _projectService.ListImagesForProject(projectId);
+
+            if (images == null || !images.Any())
+            {
+                return NotFound($"No images found for Project with ID {projectId}");
+            }
+
+            return Ok(images);
+        }
+
     }
 }

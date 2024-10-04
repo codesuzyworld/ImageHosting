@@ -15,6 +15,8 @@ namespace ImageHosting.Interface
 
             //Related Methods
             Task<IEnumerable<ProjectDto>> ListProjectsForUploader(int uploaderId);
+            Task<IEnumerable<ImagesDto>> ListImagesForProject(int projectId);
+
 
     }
 }
