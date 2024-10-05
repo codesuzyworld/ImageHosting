@@ -72,10 +72,10 @@ namespace ImageHosting.Controllers
         }
 
         /// <summary>
-        /// Updates an Image
+        /// Updates the Name and FilePath of an Image
         /// </summary>
         /// <param name="id">The ID of the Image to update</param>
-        /// <param name="ImagesDto">The required information to update the Project (ImageName ImageDescription)</param>
+        /// <param name="ImagesDto">The required information to update the Project (ImageName FilePath)</param>
         /// <returns>
         /// 400 Bad Request
         /// or
@@ -84,9 +84,9 @@ namespace ImageHosting.Controllers
         /// 204 No Content
         /// </returns>
         /// <example>
-        /// PUT: api/Project/Update/5
+        /// PUT: api/Image/Update/5
         /// Request Headers: Content-Type: application/json
-        /// Request Body: {ProductDto}
+        /// Request Body: {ImageDto}
         /// ->
         /// Response Code: 204 No Content
         /// </example>
@@ -94,48 +94,61 @@ namespace ImageHosting.Controllers
         // PUT: api/Images/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut(template: "Update/{id}")]
-        public async Task<IActionResult> PutImages(int id, [FromBody] Images images)
+        public async Task<IActionResult> PutImages(int id, [FromBody] ImagesDto imagesDto)
         {
-            if (id != images.ImageID)
+            if (id != imagesDto.ImageID)
             {
                 return BadRequest();
             }
 
-            _context.Entry(images).State = EntityState.Modified;
+            ServiceResponse response = await _imagesService.UpdateImage(imagesDto);
 
-            try
+            if (response.Status == ServiceResponse.ServiceStatus.NotFound)
             {
-                await _context.SaveChangesAsync();
+                return NotFound(response.Messages);
             }
-            catch (DbUpdateConcurrencyException)
+            else if (response.Status == ServiceResponse.ServiceStatus.Error)
             {
-                if (!ImagesExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return StatusCode(500, response.Messages);
             }
 
+            //Status = Updated
             return NoContent();
         }
 
+
         // POST: api/Images
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Images>> PostImages(Images images)
+        [HttpPost(template: "Add")]
+        public async Task<ActionResult<ProjectDto>> AddImage([FromBody] ImagesDto imagesDto)
         {
-            _context.Images.Add(images);
-            await _context.SaveChangesAsync();
+            var response = await _imagesService.AddImage(imagesDto);
+            if (response.Status == ServiceResponse.ServiceStatus.NotFound)
+                return NotFound(response.Messages);
+            else if (response.Status == ServiceResponse.ServiceStatus.Error)
+                return StatusCode(500, response.Messages);
 
-            return CreatedAtAction("GetImages", new { id = images.ImageID }, images);
+            return Created($"api/Project/Find/{response.CreatedId}", imagesDto);
         }
 
+        /// <summary>
+        /// Deletes the Project
+        /// </summary>
+        /// <param name="id">The id of the Project to delete</param>
+        /// <returns>
+        /// 204 No Content
+        /// or
+        /// 404 Not Found
+        /// </returns>
+        /// <example>
+        /// DELETE: api/Project/Delete/7
+        /// ->
+        /// Response Code: 204 No Content
+        /// </example>
+        /// 
 
         // DELETE: api/Images/5
-        [HttpDelete("{id}")]
+        [HttpDelete(template: "Delete/{id}")]
         public async Task<IActionResult> DeleteImages(int id)
         {
             var images = await _context.Images.FindAsync(id);
@@ -150,9 +163,5 @@ namespace ImageHosting.Controllers
             return NoContent();
         }
 
-        private bool ImagesExists(int id)
-        {
-            return _context.Images.Any(e => e.ImageID == id);
-        }
     }
 }

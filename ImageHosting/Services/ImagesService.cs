@@ -34,6 +34,7 @@ namespace ImageHosting.Services
             });
         }
 
+        // This service finds image by ID
         public async Task<ImagesDto?> FindImage(int id)
         {
             var img = await _context.Images.Include(img => img.Project).FirstOrDefaultAsync(img => img.ImageID == id);
@@ -50,62 +51,7 @@ namespace ImageHosting.Services
             };
         }
 
-        // New method to handle file upload and save image metadata
-        public async Task<ServiceResponse> UploadImageAsync(IFormFile file, int projectId)
-        {
-            ServiceResponse response = new();
-
-            // Check if the file is null or empty
-            if (file == null || file.Length == 0)
-            {
-                response.Status = ServiceResponse.ServiceStatus.Error;
-                response.Messages.Add("Invalid file.");
-                return response;
-            }
-
-            // Get the project entity from the database to verify if it exists
-            var project = await _context.Project.FindAsync(projectId);
-            if (project == null)
-            {
-                response.Status = ServiceResponse.ServiceStatus.NotFound;
-                response.Messages.Add("Project not found.");
-                return response;
-            }
-
-            // Generate a unique filename and file path
-            var fileName = Path.GetFileNameWithoutExtension(file.FileName);
-            var extension = Path.GetExtension(file.FileName);
-            var newFileName = $"{fileName}_{Guid.NewGuid()}{extension}";
-            var filePath = Path.Combine("wwwroot/uploads", newFileName);
-
-            // Ensure directory exists
-            Directory.CreateDirectory("wwwroot/uploads");
-
-            // Save the file to the specified path
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await file.CopyToAsync(stream);
-            }
-
-            // Create the new image entry in the database
-            var image = new Images
-            {
-                FileName = newFileName,
-                FilePath = filePath,
-                ProjectID = projectId,
-                UploadedAt = DateTime.Now,
-                Project = project
-            };
-
-            _context.Images.Add(image);
-            await _context.SaveChangesAsync();
-
-            response.Status = ServiceResponse.ServiceStatus.Created;
-            response.CreatedId = image.ImageID;
-            response.Messages.Add("Image uploaded successfully.");
-            return response;
-        }
-
+        // This service adds a record of image, it doesn't really upload a file per say
         public async Task<ServiceResponse> AddImage(ImagesDto imagesDto)
         {
             ServiceResponse response = new();
@@ -121,19 +67,23 @@ namespace ImageHosting.Services
             var image = new Images
             {
                 FileName = imagesDto.FileName,
+                FilePath = imagesDto.FilePath,
                 UploadedAt = DateTime.Now,
                 ProjectID = imagesDto.ProjectID,
                 Project = project
             };
+
 
             _context.Images.Add(image);
             await _context.SaveChangesAsync();
 
             response.Status = ServiceResponse.ServiceStatus.Created;
             response.CreatedId = image.ImageID;
+            response.Messages.Add("Image metadata added successfully.");
             return response;
         }
 
+        // This service updates ImageName and also FilePath
         public async Task<ServiceResponse> UpdateImage(ImagesDto imagesDto)
         {
             ServiceResponse response = new();
@@ -148,6 +98,7 @@ namespace ImageHosting.Services
 
             // Only update properties that are allowed to change (e.g., FileName)
             image.FileName = imagesDto.FileName;
+            image.FilePath = imagesDto.FilePath;
 
             _context.Entry(image).State = EntityState.Modified;
             await _context.SaveChangesAsync();
@@ -156,6 +107,7 @@ namespace ImageHosting.Services
             return response;
         }
 
+        // This service deletes image by ID
         public async Task<ServiceResponse> DeleteImage(int id)
         {
             ServiceResponse response = new();
@@ -175,6 +127,7 @@ namespace ImageHosting.Services
             return response;
         }
 
+        // This service lists Images for Project
         public async Task<IEnumerable<ImagesDto>> ListImagesForProject(int projectId)
         {
             var images = await _context.Images.Where(img => img.ProjectID == projectId).ToListAsync();
