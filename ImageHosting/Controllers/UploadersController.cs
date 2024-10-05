@@ -59,7 +59,7 @@ namespace ImageHosting.Controllers
         /// <summary>
         /// Adds a new uploader
         /// </summary>
-        /// <param name="uploaderDto">The uploader details to add</param>
+        /// <param name="uploaderDto">Adds Uploader name and email</param>
         /// <returns>201 Created with the added uploader</returns>
         /// <example>
         /// POST: api/Uploaders/Add
@@ -80,7 +80,7 @@ namespace ImageHosting.Controllers
         /// Updates an existing uploader
         /// </summary>
         /// <param name="id">The ID of the uploader to update</param>
-        /// <param name="uploaderDto">The new details for the uploader</param>
+        /// <param name="uploaderDto">Updates Uploader name and email</param>
         /// <returns>204 No Content or 404 Not Found</returns>
         /// <example>
         /// PUT: api/Uploaders/Update/1
@@ -105,9 +105,9 @@ namespace ImageHosting.Controllers
         }
 
         /// <summary>
-        /// Deletes an uploader specified by its {id}
+        /// Deletes an uploader by id
         /// </summary>
-        /// <param name="id">The id of the uploader to delete</param>
+        /// <param name="id">UploaderId</param>
         /// <returns>204 No Content or 404 Not Found</returns>
         /// <example>
         /// DELETE: api/Uploaders/Delete/1
