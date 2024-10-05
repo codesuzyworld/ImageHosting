@@ -25,6 +25,8 @@ builder.Services.AddSwaggerGen();
 //Just registering the services here
 builder.Services.AddScoped<IProjectService, ProjectService>();
 builder.Services.AddScoped<ImagesService>();
+builder.Services.AddScoped<IUploaderService, UploaderService>();
+
 
 
 var app = builder.Build();
