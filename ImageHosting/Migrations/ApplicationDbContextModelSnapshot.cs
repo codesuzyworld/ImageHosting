@@ -17,12 +17,12 @@ namespace ImageHosting.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.8")
+                .HasAnnotation("ProductVersion", "8.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("ImageHosting.Models.Images", b =>
+            modelBuilder.Entity("ImageHosting.Models.Image", b =>
                 {
                     b.Property<int>("ImageID")
                         .ValueGeneratedOnAdd()
@@ -34,8 +34,10 @@ namespace ImageHosting.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FilePath")
-                        .IsRequired()
+                    b.Property<bool>("HasPic")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PicExtension")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ProjectID")
@@ -81,6 +83,27 @@ namespace ImageHosting.Migrations
                     b.HasIndex("UploaderId");
 
                     b.ToTable("Project");
+                });
+
+            modelBuilder.Entity("ImageHosting.Models.Tag", b =>
+                {
+                    b.Property<int>("TagID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TagID"));
+
+                    b.Property<string>("TagColor")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TagName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("TagID");
+
+                    b.ToTable("Tag");
                 });
 
             modelBuilder.Entity("ImageHosting.Models.Uploader", b =>
@@ -306,7 +329,22 @@ namespace ImageHosting.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("ImageHosting.Models.Images", b =>
+            modelBuilder.Entity("ProjectTag", b =>
+                {
+                    b.Property<int>("ProjectsProjectId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TagsTagID")
+                        .HasColumnType("int");
+
+                    b.HasKey("ProjectsProjectId", "TagsTagID");
+
+                    b.HasIndex("TagsTagID");
+
+                    b.ToTable("ProjectTag");
+                });
+
+            modelBuilder.Entity("ImageHosting.Models.Image", b =>
                 {
                     b.HasOne("ImageHosting.Models.Project", "Project")
                         .WithMany("Images")
@@ -375,6 +413,21 @@ namespace ImageHosting.Migrations
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ProjectTag", b =>
+                {
+                    b.HasOne("ImageHosting.Models.Project", null)
+                        .WithMany()
+                        .HasForeignKey("ProjectsProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ImageHosting.Models.Tag", null)
+                        .WithMany()
+                        .HasForeignKey("TagsTagID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

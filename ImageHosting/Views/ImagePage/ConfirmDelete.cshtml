@@ -1,0 +1,17 @@
+﻿@model ImageHosting.Models.ImagesDto
+
+@{
+    ViewData["Title"] = "Confirm Image Deletion";
+}
+
+<h2>Delete Image</h2>
+
+<p>Are you sure you want to delete the image <strong>@Model.FileName</strong>?</p>
+
+<form method="post" asp-action="Delete" asp-route-id="@Model.ImageID">
+    <input type="hidden" name="ImageID" value="@Model.ImageID" />
+    <div>
+        <input type="submit" value="Delete" class="btn btn-danger" />
+        <a asp-action="Details" asp-route-id="@Model.ImageID" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>

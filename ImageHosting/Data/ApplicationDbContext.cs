@@ -10,7 +10,8 @@ namespace ImageHosting.Data
         // uploader.cs will map to a uploaders table
         public DbSet<Uploader> Uploader { get; set; }
         public DbSet<Project> Project { get; set; }
-        public DbSet<Images> Images { get; set; }
+        public DbSet<Image> Images { get; set; }
+        public DbSet<Tag> Tag { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -23,6 +24,11 @@ namespace ImageHosting.Data
             // Therefore this method ensuring that identity-related entities are applied
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+           // Many to Many relationship here,setting the foreign keys
+            modelBuilder.Entity<Project>()
+            .HasMany(p => p.Tags)
+            .WithMany(t => t.Projects);
         }
     }
 }

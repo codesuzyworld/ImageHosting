@@ -1,0 +1,39 @@
+﻿@model IEnumerable<ImageHosting.Models.TagDto>
+
+@{
+    ViewData["Title"] = "List";
+}
+
+<h1>Tags</h1>
+
+<p>
+    <a asp-action="New" asp-controller="TagPage" class="btn btn-primary">Create New Tag</a>
+</p>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Tag Name</th>
+            <th>Tag Color</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.TagName)</td>
+                <td style="background-color:@item.TagColor;color: white;">@item.TagColor</td>
+                <td>
+                    <a asp-action="Details" asp-controller="TagPage" asp-route-id="@item.TagID" class="btn btn-info">View Projects</a>
+                    <a asp-action="Edit" asp-controller="TagPage" asp-route-id="@item.TagID" class="btn btn-warning">Edit</a>
+                    <a asp-action="ConfirmDelete" asp-controller="TagPage" asp-route-id="@item.TagID" class="btn btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div>
+    <a asp-action="Index" class="btn btn-secondary">Back to Home</a>
+</div>

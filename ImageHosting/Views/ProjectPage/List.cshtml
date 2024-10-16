@@ -1,0 +1,57 @@
+﻿@model IEnumerable<ImageHosting.Models.ProjectDto>
+
+@{
+    ViewData["Title"] = "Projects List";
+}
+
+<h1>Projects</h1>
+
+<p>
+    <a asp-action="New" class="btn btn-primary">Create New Project</a>
+</p>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Project Name</th>
+            <th>Tags</th>
+            <th>Project Description</th>
+            <th>Uploader</th>
+            <th>Upload Date</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.ProjectName)</td>
+                <td>
+                    @if (item.Tags != null && item.Tags.Any())
+                    {
+                        @foreach (var tag in item.Tags)
+                        {
+                            <span class="badge" style="background-color:@tag.TagColor;">@tag.TagName</span>
+                        }
+                    }
+                    else
+                    {
+                        <span>No Tags</span>
+                    }
+                </td>
+                <td>@Html.DisplayFor(modelItem => item.ProjectDescription)</td>
+                <td>@Html.DisplayFor(modelItem => item.UploaderName)</td>
+                <td>@Html.DisplayFor(modelItem => item.CreatedAt)</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.ProjectId" class="btn btn-info">View Images</a>
+                    <a asp-action="Edit" asp-route-id="@item.ProjectId" class="btn btn-warning">Edit</a>
+                    <a asp-action="ConfirmDelete" asp-route-id="@item.ProjectId" class="btn btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div>
+    <a asp-action="Index" class="btn btn-secondary">Back to Home</a>
+</div>

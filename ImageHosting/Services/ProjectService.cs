@@ -1,5 +1,4 @@
 ﻿using ImageHosting.Interface;
-using ImageHosting.Migrations;
 using ImageHosting.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,14 +19,22 @@ namespace ImageHosting.Services
         //This service lists out all projects according to the uploader
         public async Task<IEnumerable<ProjectDto>> ListProjects()
         {
-            var projects = await _context.Project.Include(p => p.Uploader).ToListAsync();
+            var projects = await _context.Project.Include(p => p.Uploader).Include(p => p.Tags).ToListAsync();
             return projects.Select(project => new ProjectDto
             {
                 ProjectId = project.ProjectId,
                 ProjectName = project.ProjectName,
                 ProjectDescription = project.ProjectDescription,
                 CreatedAt = project.CreatedAt,
-                UploaderId = project.UploaderId
+                UploaderId = project.UploaderId,
+                UploaderName = project.Uploader.UploaderName,
+                Tags = project.Tags.Select(t => new TagDto 
+                { 
+                    TagID = t.TagID, 
+                    TagName = t.TagName, 
+                    TagColor = t.TagColor 
+                })
+
             });
         }
 
@@ -44,7 +51,8 @@ namespace ImageHosting.Services
                 ProjectName = project.ProjectName,
                 ProjectDescription = project.ProjectDescription,
                 CreatedAt = project.CreatedAt,
-                UploaderId = project.UploaderId
+                UploaderId = project.UploaderId,
+                UploaderName = project.Uploader.UploaderName
             };
         }
 
@@ -107,11 +115,52 @@ namespace ImageHosting.Services
         public async Task<ServiceResponse> DeleteProject(int id)
         {
             ServiceResponse response = new();
-            var project = await _context.Project.FindAsync(id);
+
+            var project = await _context.Project
+                .Include(p => p.Images) 
+                .FirstOrDefaultAsync(p => p.ProjectId == id);
+
             if (project == null)
             {
                 response.Status = ServiceResponse.ServiceStatus.NotFound;
                 return response;
+            }
+
+            //When deleting a project, we gotta delete the folder too
+            string projectImageDirectory = Path.Combine("wwwroot/images/projects/", $"{project.ProjectId}");
+
+            //Delete all the pictures in the folder
+            foreach (var image in project.Images)
+            {
+                string imageFilePath = Path.Combine(projectImageDirectory, $"{image.ImageID}{image.PicExtension}");
+                if (File.Exists(imageFilePath))
+                {
+                    try
+                    {
+                        File.Delete(imageFilePath);
+                    }
+                    catch (Exception ex)
+                    {
+                        response.Status = ServiceResponse.ServiceStatus.Error;
+                        response.Messages.Add($"Error deleting image file {image.FileName}: {ex.Message}");
+                        return response;
+                    }
+                }
+            }
+
+            // Delete the project folder too
+            if (Directory.Exists(projectImageDirectory))
+            {
+                try
+                {
+                    Directory.Delete(projectImageDirectory);
+                }
+                catch (Exception ex)
+                {
+                    response.Status = ServiceResponse.ServiceStatus.Error;
+                    response.Messages.Add($"Error deleting project folder: {ex.Message}");
+                    return response;
+                }
             }
 
             _context.Project.Remove(project);
@@ -136,29 +185,118 @@ namespace ImageHosting.Services
             });
         }
 
-        //This service lists all images within a project by id
+        //This service lists all images for a project by project ID
         public async Task<IEnumerable<ImagesDto>> ListImagesForProject(int projectId)
         {
-            // Retrieve the project and include images
+
             var project = await _context.Project
-                .Include(p => p.Images) // Include the Images navigation property
+                .Include(p => p.Images)
                 .FirstOrDefaultAsync(p => p.ProjectId == projectId);
 
             if (project == null)
             {
-                return new List<ImagesDto>(); // Return an empty list if the project is not found
+                return new List<ImagesDto>();
             }
 
             // Map images to ImageDto
             var images = project.Images.Select(img => new ImagesDto
             {
-                ImageID = img.ImageID,
                 FileName = img.FileName,
-                FilePath = img.FilePath,
+                ImageID = img.ImageID,
                 UploadedAt = img.UploadedAt
             }).ToList();
 
             return images;
         }
+
+        public async Task<IEnumerable<TagDto>> ListTagsForProject(int projectId)
+        {
+
+            var project = await _context.Project
+                .Include(p => p.Tags)
+                .FirstOrDefaultAsync(p => p.ProjectId == projectId);
+
+            if (project == null)
+            {
+                return new List<TagDto>(); 
+            }
+
+            // Map tags to TagDto
+            var tags = project.Tags.Select(tag => new TagDto
+            {
+                TagID = tag.TagID,
+                TagName = tag.TagName,
+                TagColor = tag.TagColor
+            }).ToList();
+
+            return tags;
+        }
+
+        public async Task<ServiceResponse> LinkTagToProject(int tagId, int projectId)
+        {
+            ServiceResponse serviceResponse = new();
+
+            Tag? tag = await _context.Tag.Include(t => t.Projects).FirstOrDefaultAsync(t => t.TagID == tagId);
+            Project? project = await _context.Project.FindAsync(projectId);
+
+            // Validate entities
+            if (project == null || tag == null)
+            {
+                serviceResponse.Status = ServiceResponse.ServiceStatus.NotFound;
+                if (project == null) serviceResponse.Messages.Add("Project not found.");
+                if (tag == null) serviceResponse.Messages.Add("Tag not found.");
+                return serviceResponse;
+            }
+
+            try
+            {
+                tag.Projects.Add(project); // Add project to tag
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Status = ServiceResponse.ServiceStatus.Error;
+                serviceResponse.Messages.Add("Error linking tag to project.");
+                serviceResponse.Messages.Add(ex.Message);
+                return serviceResponse;
+            }
+
+            serviceResponse.Status = ServiceResponse.ServiceStatus.Created;
+            return serviceResponse;
+        }
+
+        public async Task<ServiceResponse> UnlinkTagFromProject(int tagId, int projectId)
+        {
+            ServiceResponse serviceResponse = new();
+
+            Tag? tag = await _context.Tag.Include(t => t.Projects).FirstOrDefaultAsync(t => t.TagID == tagId);
+            Project? project = await _context.Project.FindAsync(projectId);
+
+            // Validate entities
+            if (project == null || tag == null)
+            {
+                serviceResponse.Status = ServiceResponse.ServiceStatus.NotFound;
+                if (project == null) serviceResponse.Messages.Add("Project not found.");
+                if (tag == null) serviceResponse.Messages.Add("Tag not found.");
+                return serviceResponse;
+            }
+
+            try
+            {
+                tag.Projects.Remove(project); // Remove project from tag
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Status = ServiceResponse.ServiceStatus.Error;
+                serviceResponse.Messages.Add("Error unlinking tag from project.");
+                serviceResponse.Messages.Add(ex.Message);
+                return serviceResponse;
+            }
+
+            serviceResponse.Status = ServiceResponse.ServiceStatus.Deleted;
+            return serviceResponse;
+        }
+
     }
 }

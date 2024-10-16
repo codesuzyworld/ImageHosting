@@ -1,0 +1,113 @@
+﻿@model ImageHosting.Models.ViewModels.ProjectDetails
+
+@{
+    ViewData["Title"] = "Project Details";
+}
+
+<div class="container">
+    <div class="row">
+        <!-- We got the standard project info on the left -->
+        <div class="col-md-8">
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h2>@Model.Project.ProjectName</h2>
+                </div>
+                <div class="card-body">
+                    <p><strong>Description:</strong> @Model.Project.ProjectDescription</p>
+                    <p><strong>Uploaded At:</strong> @Model.Project.CreatedAt.ToString("dd/MM/yyyy")</p>
+                    <p><strong>Uploader Name:</strong> @Model.Project.UploaderName</p>
+                </div>
+            </div>
+
+            <h3>Images in this Project</h3>
+
+            <div class="mt-3">
+                <a asp-action="New" asp-controller="ImagePage" asp-route-projectId="@Model.Project.ProjectId" class="btn btn-primary">Add Image</a>
+            </div>
+
+            @if (Model.ProjectImages != null && Model.ProjectImages.Any())
+            {
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>File Name</th>
+                            <th>Uploaded At</th>
+                            <th>View</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var image in Model.ProjectImages)
+                        {
+                            <tr>
+                                <td>@Html.DisplayFor(modelItem => image.FileName)</td>
+                                <td>@Html.DisplayFor(modelItem => image.UploadedAt)</td>
+                                <td>
+                                    <a asp-controller="ImagePage" asp-action="Details" asp-route-id="@image.ImageID" class="btn btn-info">Download Image</a>
+                                    <a asp-controller="ImagePage" asp-action="ConfirmDelete" asp-route-id="@image.ImageID" class="btn btn-danger">Delete</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p>No images have been uploaded to this project yet.</p>
+            }
+        </div>
+
+        <!-- On the right side we got the tags just for better UI -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Manage Tags</h3>
+                </div>
+                <div class="card-body">
+                    <h4>Tags:</h4>
+                        <div>
+                            @if (Model.ProjectTags != null && Model.ProjectTags.Any())
+                            {
+                                @foreach (var tag in Model.ProjectTags)
+                                {
+                                    <div class="d-flex align-items-center mb-2">
+                                        <span class="badge" style="background-color:@tag.TagColor; color: white;">@tag.TagName</span>
+                                        <form method="POST" action="/ProjectPage/UnlinkFromTag" style="display:inline-block; margin-left: 10px;">
+                                            <input type="hidden" name="projectId" value="@Model.Project.ProjectId" />
+                                            <input type="hidden" name="tagId" value="@tag.TagID" />
+                                            <input type="submit" value="Remove" class="btn btn-sm btn-danger" />
+                                        </form>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <span>No Tags</span>
+                            }
+                        </div>
+
+                    <hr />
+
+                    <h4>Add a Tag</h4>
+                    <form method="POST" action="/ProjectPage/LinkToTag">
+                        <input type="hidden" name="projectId" value="@Model.Project.ProjectId" />
+                        <div class="form-group">
+                            <select name="tagId" class="form-control">
+                                @foreach (var tag in Model.AllTags)
+                                {
+                                    <option value="@tag.TagID">@tag.TagName</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group mt-2">
+                            <input type="submit" value="Add Tag" class="btn btn-success" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <a asp-action="List" class="btn btn-secondary">Back to Project List</a>
+    </div>
+</div>

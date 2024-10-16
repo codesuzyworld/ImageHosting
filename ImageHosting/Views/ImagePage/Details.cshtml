@@ -1,0 +1,38 @@
+﻿@model ImageHosting.Models.ViewModels.ImageDetails
+
+@{
+    ViewData["Title"] = "Image Details";
+}
+
+
+
+@if (Model.Project != null)
+{
+    <div class="card mb-3">
+        <div class="card-header">
+            <h2>Image Details</h2>
+        </div>
+        <div class="card-body">
+            <p><strong>File Name:</strong> @Model.Image.FileName</p>
+            <p><strong>Uploaded At:</strong> @Model.Image.UploadedAt</p>
+            <p><strong>Project Name:</strong> @Model.Project.ProjectName</p>
+            <p><strong>Project Description:</strong> @Model.Project.ProjectDescription</p>
+
+            <!-- If the model image hasPIC, then display the image -->
+            @if (Model.Image.HasPic)
+            {
+                <p><strong>Uploaded Image:</strong></p>
+                <img src="/images/projects/@Model.Project.ProjectId/@Model.Image.ImageID@Model.Image.PicExtension"
+                     alt="Project Image" style="max-width:400px; max-height:300px;" />
+            }
+            else
+            {
+                <p>No image uploaded yet.</p>
+            }
+        </div>
+    </div>
+}
+
+<div class="mt-3">
+    <a asp-action="Details" asp-controller="ProjectPage" asp-route-id="@Model.Project.ProjectId" class="btn btn-secondary">Back to Project Details</a>
+</div>

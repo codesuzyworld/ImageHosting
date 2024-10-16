@@ -15,8 +15,12 @@ namespace ImageHosting.Models
         public virtual Uploader Uploader { get; set; }
         public int UploaderId { get; set; }
 
-        //A project can have many items
-        public ICollection<Images>? Images { get; set; }
+        //A project can have many images
+        public ICollection<Image>? Images { get; set; }
+
+        //A project can have many tags (Many to Many relationship)
+        public ICollection<Tag>? Tags { get; set; }
+
     }
     public class ProjectDto
     {
@@ -27,5 +31,10 @@ namespace ImageHosting.Models
         public DateTime CreatedAt { get; set; }
 
         public int UploaderId { get; set; }
+        public string UploaderName { get; set; }
+
+        public IEnumerable<TagDto>? Tags { get; set; }
+
+
     }
 }

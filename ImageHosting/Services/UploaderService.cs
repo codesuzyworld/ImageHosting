@@ -1,5 +1,4 @@
 ﻿using ImageHosting.Interface;
-using ImageHosting.Migrations;
 using ImageHosting.Models;
 using Microsoft.EntityFrameworkCore;
 
