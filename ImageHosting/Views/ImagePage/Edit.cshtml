@@ -1,16 +1,16 @@
 ﻿@model ImageHosting.Models.ImagesDto
 
 @{
-    ViewData["Title"] = "Add New Image";
+    ViewData["Title"] = "Edit Image";
 }
 
-<h1>Add New Image</h1>
+<h1>Edit Image</h1>
 
-<h4>Image</h4>
+<h4>Update Image Details</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Add" enctype="multipart/form-data">
+        <form asp-action="Update" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <div class="form-group">
@@ -19,21 +19,24 @@
                 <span asp-validation-for="FileName" class="text-danger"></span>
             </div>
 
-            <!-- Hidden field for ProjectId -->
+            <!-- Hidden field for ImageID -->
+            <input type="hidden" asp-for="ImageID" />
+           
+            <!-- Hidden field for ProjectID -->
             <input type="hidden" asp-for="ProjectID" />
 
             <div class="form-group">
-                <label for="ImageFile">Select Image File</label>
+                <label for="ImageFile">Update Image File</label>
                 <input type="file" name="ImageFile" class="form-control" />
             </div>
 
             <div class="form-group">
-                <input type="submit" value="Upload Image" class="btn btn-primary" />
+                <input type="submit" value="Update Image" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="List" class="btn btn-secondary">Back to Images List</a>
+    <a asp-action="Details" asp-controller="ProjectPage" asp-route-id="@Model.ProjectID" class="btn btn-secondary">Back to Project</a>
 </div>

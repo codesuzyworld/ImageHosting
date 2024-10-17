@@ -198,6 +198,14 @@ namespace ImageHosting.Services
                     }
                 }
 
+                // Check if image file is provided
+                if (ImageFile == null || ImageFile.Length == 0)
+                {
+                    response.Messages.Add("No file uploaded. Please upload a valid image file.");
+                    response.Status = ServiceResponse.ServiceStatus.Error;
+                    return response;
+                }
+
                 // Establish valid file extensions
                 List<string> validExtensions = new List<string> { ".jpeg", ".jpg", ".png", ".gif" };
                 string imageFileExtension = Path.GetExtension(ImageFile.FileName).ToLowerInvariant();

@@ -43,6 +43,7 @@
                                 <td>@Html.DisplayFor(modelItem => image.UploadedAt)</td>
                                 <td>
                                     <a asp-controller="ImagePage" asp-action="Details" asp-route-id="@image.ImageID" class="btn btn-info">Download Image</a>
+                                    <a asp-controller="ImagePage" asp-action="Edit" asp-route-id="@image.ImageID" class="btn btn-warning">Update Image</a>
                                     <a asp-controller="ImagePage" asp-action="ConfirmDelete" asp-route-id="@image.ImageID" class="btn btn-danger">Delete</a>
                                 </td>
                             </tr>
