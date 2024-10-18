@@ -16,7 +16,7 @@ namespace ImageHosting.Services
             _context = context;
         }
 
-        //This service lists out all projects according to the uploader
+        //This service retrieves a list of all projects, including the associated uploader and tags.
         public async Task<IEnumerable<ProjectDto>> ListProjects()
         {
             var projects = await _context.Project.Include(p => p.Uploader).Include(p => p.Tags).ToListAsync();
@@ -38,7 +38,8 @@ namespace ImageHosting.Services
             });
         }
 
-        //This service finds a project by ID
+        // Finds a project by ID
+        // Returns null if the project is not found.
         public async Task<ProjectDto?> FindProject(int id)
         {
             var project = await _context.Project.Include(p => p.Uploader).FirstOrDefaultAsync(p => p.ProjectId == id);
@@ -56,7 +57,7 @@ namespace ImageHosting.Services
             };
         }
 
-        //This service adds a project
+        // Adds a new project to the database
 
         public async Task<ServiceResponse> AddProject(ProjectDto projectDto)
         {
@@ -87,8 +88,7 @@ namespace ImageHosting.Services
             return response;
         }
 
-        //This service updates a project
-
+        //Updates an existing project's details (e.g., name, description, and uploader)
         public async Task<ServiceResponse> UpdateProject(ProjectDto projectDto)
         {
             ServiceResponse response = new();
@@ -102,6 +102,7 @@ namespace ImageHosting.Services
 
             project.ProjectName = projectDto.ProjectName;
             project.ProjectDescription = projectDto.ProjectDescription;
+            project.UploaderId = projectDto.UploaderId;
 
             _context.Entry(project).State = EntityState.Modified;
             await _context.SaveChangesAsync();
@@ -110,8 +111,7 @@ namespace ImageHosting.Services
             return response;
         }
 
-        //This service deletes a project
-
+        //This service deletes a project by ID
         public async Task<ServiceResponse> DeleteProject(int id)
         {
             ServiceResponse response = new();
@@ -232,6 +232,8 @@ namespace ImageHosting.Services
             return tags;
         }
 
+        //Links a tag by ID to a project by ID.
+        //Ensures both the tag and project exist before linking.
         public async Task<ServiceResponse> LinkTagToProject(int tagId, int projectId)
         {
             ServiceResponse serviceResponse = new();
@@ -265,6 +267,8 @@ namespace ImageHosting.Services
             return serviceResponse;
         }
 
+        //Unlinks a tag from a project by removing the association between the tag and the project in the ProjectTag table.
+        //Ensures both the tag and project exist before unlinking.
         public async Task<ServiceResponse> UnlinkTagFromProject(int tagId, int projectId)
         {
             ServiceResponse serviceResponse = new();

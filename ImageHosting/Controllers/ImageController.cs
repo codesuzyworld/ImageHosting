@@ -116,6 +116,26 @@ namespace ImageHosting.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Adds a new image to the database.
+        /// </summary>
+        /// <param name="imagesDto">The DTO containing the necessary information to create the image (e.g., ImageName, FilePath)</param>
+        /// <returns>
+        /// 201 Created
+        /// {ImagesDto}
+        /// or
+        /// 404 Not Found
+        /// or
+        /// 500 Internal Server Error
+        /// </returns>
+        /// <example>
+        /// POST: api/Images/Add
+        /// Request Headers: Content-Type: application/json
+        /// Request Body: {ImageDto}
+        /// ->
+        /// Response Code: 201 Created
+        /// </example>
+        /// 
 
         // POST: api/Images
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
@@ -132,9 +152,9 @@ namespace ImageHosting.Controllers
         }
 
         /// <summary>
-        /// Deletes the Project
+        /// Deletes the Image
         /// </summary>
-        /// <param name="id">The id of the Project to delete</param>
+        /// <param name="id">The id of the Image to delete</param>
         /// <returns>
         /// 204 No Content
         /// or
@@ -187,7 +207,6 @@ namespace ImageHosting.Controllers
         /// curl "https://localhost:xx/api/Project/UploadImageFile/1" -X "PUT" -F ProductPic=@myproductpic.jpg
         /// </example>
         [HttpPut(template: "UploadImageFile/{id}")]
-        //[Authorize]
         public async Task<IActionResult> UploadImageFile(int id, IFormFile ImageFile)
         {
 

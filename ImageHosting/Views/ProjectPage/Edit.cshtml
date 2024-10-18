@@ -12,7 +12,9 @@
     <div class="col-md-4">
         <form asp-action="Update" asp-route-id="@Model.ProjectId">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
             <input type="hidden" asp-for="ProjectId" />
+
             <div class="form-group">
                 <label asp-for="ProjectName" class="control-label"></label>
                 <input asp-for="ProjectName" class="form-control" />
@@ -22,6 +24,13 @@
                 <label asp-for="ProjectDescription" class="control-label"></label>
                 <input asp-for="ProjectDescription" class="form-control" />
                 <span asp-for="ProjectDescription" class="text-danger"></span>
+            </div>
+
+            <!-- Dropdown for Uploader -->
+            <div class="form-group">
+                <label asp-for="UploaderId" class="control-label">Uploader</label>
+                <select asp-for="UploaderId" asp-items="ViewBag.Uploaders" class="form-control"></select>
+                <span asp-validation-for="UploaderId" class="text-danger"></span>
             </div>
 
             <div class="form-group">

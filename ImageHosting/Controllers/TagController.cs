@@ -45,8 +45,19 @@ namespace ImageHosting.Controllers
         }
 
         /// <summary>
-        /// Returns a specific tag by its {id}
+        /// Returns a specific tag by its {id}.
         /// </summary>
+        /// <param name="id">The ID of the tag to retrieve</param>
+        /// <returns>
+        /// 200 OK
+        /// {TagDto}
+        /// or
+        /// 404 Not Found
+        /// </returns>
+        /// <example>
+        /// GET: api/Tag/Find/1 -> {TagDto}
+        /// </example>
+
         [HttpGet(template: "Find/{id}")]
         public async Task<ActionResult<TagDto>> FindTag(int id)
         {
@@ -64,9 +75,27 @@ namespace ImageHosting.Controllers
             }
         }
 
+
         /// <summary>
-        /// Adds a new tag
+        /// Adds a new tag to the database.
         /// </summary>
+        /// <param name="tagDto">The DTO containing the necessary information to create the tag (e.g., TagName, TagColor)</param>
+        /// <returns>
+        /// 201 Created
+        /// {TagDto}
+        /// or
+        /// 404 Not Found
+        /// or
+        /// 500 Internal Server Error
+        /// </returns>
+        /// <example>
+        /// POST: api/Tag/Add
+        /// Request Headers: Content-Type: application/json
+        /// Request Body: {TagDto}
+        /// ->
+        /// Response Code: 201 Created
+        /// </example>
+
         [HttpPost(template: "Add")]
         public async Task<ActionResult<TagDto>> AddTag(TagDto tagDto)
         {
@@ -86,8 +115,27 @@ namespace ImageHosting.Controllers
         }
 
         /// <summary>
-        /// Updates a tag
+        /// Updates an existing tag specified by its {id}.
         /// </summary>
+        /// <param name="id">The ID of the tag to update</param>
+        /// <param name="tagDto">The DTO containing updated tag information</param>
+        /// <returns>
+        /// 400 Bad Request
+        /// or
+        /// 404 Not Found
+        /// or
+        /// 500 Internal Server Error
+        /// or
+        /// 204 No Content
+        /// </returns>
+        /// <example>
+        /// PUT: api/Tag/Update/5
+        /// Request Headers: Content-Type: application/json
+        /// Request Body: {TagDto}
+        /// ->
+        /// Response Code: 204 No Content
+        /// </example>
+        /// 
         [HttpPut(template: "Update/{id}")]
         public async Task<IActionResult> UpdateTag(int id, [FromBody] TagDto tagDto)
         {
@@ -112,10 +160,24 @@ namespace ImageHosting.Controllers
             //Status = Updated
             return NoContent();
         }
-
         /// <summary>
-        /// Deletes a tag by ID
+        /// Deletes the tag specified by its {id}.
         /// </summary>
+        /// <param name="id">The ID of the tag to delete</param>
+        /// <returns>
+        /// 204 No Content
+        /// or
+        /// 404 Not Found
+        /// or
+        /// 500 Internal Server Error
+        /// </returns>
+        /// <example>
+        /// DELETE: api/Tag/Delete/3
+        /// -> 
+        /// Response Code: 204 No Content
+        /// </example>
+       
+
         [HttpDelete(template: "Delete/{id}")]
         public async Task<IActionResult> DeleteTag(int id)
         {
@@ -133,7 +195,20 @@ namespace ImageHosting.Controllers
             return NoContent();
         }
 
-
+        /// <summary>
+        /// Returns a list of all projects associated with a specific tag identified by its {id}.
+        /// </summary>
+        /// <param name="id">The ID of the tag for which to list associated projects</param>
+        /// <returns>
+        /// 200 OK
+        /// [{ProjectDto},{ProjectDto},..]
+        /// or
+        /// 404 Not Found
+        /// </returns>
+        /// <example>
+        /// GET: api/Tag/ListProjectsForTag/4 -> [{ProjectDto},{ProjectDto},..]
+        /// </example>
+        /// 
         [HttpGet(template: "ListProjectsForTag/{id}")]
         public async Task<ActionResult<IEnumerable<ProjectDto>>> ListProjectsForTag(int id)
         {

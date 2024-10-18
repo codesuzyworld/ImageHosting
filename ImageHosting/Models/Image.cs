@@ -12,10 +12,10 @@ namespace ImageHosting.Models
 
         public bool HasPic { get; set; } = false;
 
-        // images stored in /wwwroot/images/products/{ProductId}.{PicExtension}
+        // images stored in /wwwroot/images/projects/{ImageId}.{PicExtension}
         public string? PicExtension { get; set; }
 
-        //An image belongs to one product
+        //An image belongs to one project
         public required virtual Project Project { get; set; }
         public int ProjectID { get; set; }
 

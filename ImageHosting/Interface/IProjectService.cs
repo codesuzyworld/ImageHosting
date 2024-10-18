@@ -17,8 +17,8 @@ namespace ImageHosting.Interface
             Task<IEnumerable<ProjectDto>> ListProjectsForUploader(int uploaderId);
             Task<IEnumerable<ImagesDto>> ListImagesForProject(int projectId);
             Task<IEnumerable<TagDto>> ListTagsForProject(int projectId);
-        Task<ServiceResponse> LinkTagToProject(int tagId, int projectId);
-        Task<ServiceResponse> UnlinkTagFromProject(int tagId, int projectId);
+            Task<ServiceResponse> LinkTagToProject(int tagId, int projectId);
+            Task<ServiceResponse> UnlinkTagFromProject(int tagId, int projectId);
 
     }
 }

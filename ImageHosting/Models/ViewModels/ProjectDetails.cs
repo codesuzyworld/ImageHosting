@@ -11,6 +11,7 @@
         //A Project page can have many tags
         public IEnumerable<TagDto>? ProjectTags { get; set; }
 
+        // For a list of tags to choose from
         public IEnumerable<TagDto>? AllTags { get; set; }
 
 

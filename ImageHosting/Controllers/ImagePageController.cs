@@ -42,7 +42,7 @@ namespace ImageHosting.Controllers
         }
 
         // POST: ImagePage/Add
-        // Handle the image file upload and save the image metadata
+        // Handle the image file upload
         [HttpPost]
         public async Task<IActionResult> Add(ImagesDto imagesDto, IFormFile ImageFile)
         {
@@ -61,6 +61,8 @@ namespace ImageHosting.Controllers
 
             // if validation is passed, then proceed with the adding of image
             var result = await _imageService.AddImage(imagesDto);
+
+            //Handles errors for file upload 
             if (result.Status == ServiceResponse.ServiceStatus.Created)
             {
                 var uploadResponse = await _imageService.UpdateImageFile(result.CreatedId, ImageFile);
@@ -74,10 +76,13 @@ namespace ImageHosting.Controllers
             }
 
             ModelState.AddModelError("", string.Join(", ", result.Messages));
+
+            // Redirects to the project details page if upload is successful
             return View("New", imagesDto);
         }
 
         // GET: ImagePage/Details/{id}
+                [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
             // Fetch image by ID
@@ -96,13 +101,15 @@ namespace ImageHosting.Controllers
 
             var imageDetails = new ImageDetails
             {
-                Image = imageDto,  // Pass the image information
-                Project = projectDto // Pass the project related to this image
+                Image = imageDto, 
+                Project = projectDto 
             };
 
             return View(imageDetails);
         }
 
+        //GET ImagePage/ConfirmDelete/{id}
+        [HttpGet]
         public async Task<IActionResult> ConfirmDelete(int id)
         {
             var imageDto = await _imageService.FindImage(id);
@@ -114,6 +121,7 @@ namespace ImageHosting.Controllers
             return View(imageDto);
         }
 
+        //POST ImagePage/Delete/{id}
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
@@ -127,7 +135,6 @@ namespace ImageHosting.Controllers
 
             if (response.Status == ServiceResponse.ServiceStatus.Deleted)
             {
-                // Redirect back to the project details page using the retrieved ProjectId
                 return RedirectToAction("Details", "ProjectPage", new { id = imageDto.ProjectID });
             }
             else
@@ -136,7 +143,7 @@ namespace ImageHosting.Controllers
             }
         }
 
-
+        //GET ImagePage/Edit/{id}
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
@@ -148,6 +155,7 @@ namespace ImageHosting.Controllers
             return View(imageDto);
         }
 
+        //POST ImagePage/Update/{id}
         [HttpPost]
         public async Task<IActionResult> Update(ImagesDto imagesDto, IFormFile ImageFile)
         {

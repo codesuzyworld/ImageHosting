@@ -20,7 +20,7 @@ namespace ImageHosting.Services
             _context = context;
         }
 
-        // This service lists out all images according to the project
+        // Retrieves a list of all images by project ID, including associated project details.
         public async Task<IEnumerable<ImagesDto>> ListImages()
         {
             var images = await _context.Images.Include(img => img.Project).ToListAsync();
@@ -34,7 +34,8 @@ namespace ImageHosting.Services
             });
         }
 
-        // This service finds image by ID
+        // Finds a specific image by its ID, including associated project details.
+        // Returns null if the image is not found.
         public async Task<ImagesDto?> FindImage(int id)
         {
             var img = await _context.Images.Include(img => img.Project).FirstOrDefaultAsync(img => img.ImageID == id);
@@ -53,7 +54,8 @@ namespace ImageHosting.Services
             };
         }
 
-        // This service adds a record of image, it doesn't really upload a file per say
+        // Adds a new image to the database.
+        // The method checks that the image's associated project exists before adding the image.
         public async Task<ServiceResponse> AddImage(ImagesDto imagesDto)
         {
             ServiceResponse response = new();
@@ -86,7 +88,7 @@ namespace ImageHosting.Services
             return response;
         }
 
-        // This service updates ImageName and also FilePath
+        // Updates the image's FileName.
         public async Task<ServiceResponse> UpdateImage(ImagesDto imagesDto)
         {
             ServiceResponse response = new();
@@ -109,7 +111,7 @@ namespace ImageHosting.Services
             return response;
         }
 
-        // This service deletes image by ID
+        // Deletes an image and image file by its ID.
         public async Task<ServiceResponse> DeleteImage(int id)
         {
             ServiceResponse response = new();
@@ -151,9 +153,9 @@ namespace ImageHosting.Services
                 response.Status = ServiceResponse.ServiceStatus.Deleted;
                 return response;
             }
-        
 
-        // This service lists Images for Project
+
+        // Lists all images associated with a project by projectId.
         public async Task<IEnumerable<ImagesDto>> ListImagesForProject(int projectId)
         {
             var images = await _context.Images.Where(img => img.ProjectID == projectId).ToListAsync();
@@ -166,6 +168,9 @@ namespace ImageHosting.Services
             });
         }
 
+        // Updates the image file by ImageId.
+        // Validates the file extension and replaces the old image file if one exists.
+        // Saves the new image file and updates the image in the database.
         public async Task<ServiceResponse> UpdateImageFile(int id, IFormFile ImageFile)
         {
             ServiceResponse response = new();

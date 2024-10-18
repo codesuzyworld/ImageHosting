@@ -21,7 +21,7 @@ public class TagService : ITagService
             _context = context;
         }
 
-
+        // Retrieves a list of tags
         public async Task<IEnumerable<TagDto>> ListTags()
         {
             var tags = await _context.Tag.ToListAsync();
@@ -32,7 +32,9 @@ public class TagService : ITagService
                 TagColor = tag.TagColor
             });
         }
-
+        
+        // Finds tag by ID
+        // Returns a TagDto object if found, null if no tag is found
         public async Task<TagDto?> FindTag(int id)
         {
             var tag = await _context.Tag.FindAsync(id);
@@ -49,6 +51,7 @@ public class TagService : ITagService
             };
         }
 
+        //Adds a new tag to the database using the provided TagDto information (TagName, Tag Color).
         public async Task<ServiceResponse> AddTag(TagDto tagDto)
         {
             ServiceResponse response = new();
@@ -66,6 +69,7 @@ public class TagService : ITagService
             return response;
         }
 
+        //Updates an existing tag's details (TagName, Tag Color) based on the provided TagDto.
         public async Task<ServiceResponse> UpdateTag(TagDto tagDto)
         {
             ServiceResponse response = new();
@@ -86,6 +90,7 @@ public class TagService : ITagService
             return response;
         }
 
+        //Deletes a tag by ID
         public async Task<ServiceResponse> DeleteTag(int id)
         {
             ServiceResponse response = new();
@@ -103,7 +108,8 @@ public class TagService : ITagService
             return response;
 
         }
-
+        
+        // Lists all projects associated with a tag by ID, Includes project details + uploader info
         public async Task<IEnumerable<ProjectDto>> ListProjectsForTag(int id)
         {
             var tag = await _context.Tag

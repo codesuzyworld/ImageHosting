@@ -34,7 +34,7 @@ namespace ImageHosting.Controllers
         /// <example>
         /// GET: api/Project/List -> [{ProjectDto},{ProjectDto},..]
         /// </example>
-        /// 
+ 
         [HttpGet(template: "List")]
         public async Task<ActionResult<IEnumerable<ProjectDto>>> ListProjects()
         {
@@ -76,6 +76,25 @@ namespace ImageHosting.Controllers
 
         }
 
+        /// <summary>
+        /// Adds a Project
+        /// </summary>
+        /// <param name="ProjectDto">The required information to add the project (Project Name, Project Description, )</param>
+        /// <returns>
+        /// 201 Created
+        /// Location: api/Project/Find/{ProjectId}
+        /// {CategoryDto}
+        /// or
+        /// 404 Not Found
+        /// </returns>
+        /// <example>
+        /// POST: api/Project/Add
+        /// Request Headers: Content-Type: application/json
+        /// Request Body: {ProjectDto}
+        /// ->
+        /// Response Code: 201 Created
+        /// Response Headers: Location: api/Project/Find/{ProjectId}
+        /// </example>
         [HttpPost(template: "Add")]
         public async Task<ActionResult<ProjectDto>> AddProject([FromBody] ProjectDto projectDto)
         {
@@ -162,14 +181,15 @@ namespace ImageHosting.Controllers
 
 
         /// <summary>
-        /// Returns a list of products for a specific project by its {id}
+        /// Returns a list of projects for a specific uploader by its {id}
+        /// This method is currently unused due to not having enough time to implement the authentication login instead
         /// </summary>
         /// <returns>
         /// 200 OK
         /// [{ProjectDto},{ProjectDto},..]
         /// </returns>
         /// <example>
-        /// GET: api/Product/ListForCategory/3 -> [{ProductDto},{ProductDto},..]
+        /// GET: api/Projects/ListProjectsForUploader/3 -> [{ProjectDto},{ProjectDto},..]
         /// </example>
         /// 
         [HttpGet(template: "ListProjectsForUploader/{uploaderId}")]
@@ -192,7 +212,21 @@ namespace ImageHosting.Controllers
             return Ok(images);
         }
 
-
+        /// <summary>
+        /// Returns a list of tags associated with a specific project identified by its {projectId}.
+        /// If the project is not found or there are no tags, returns appropriate status codes.
+        /// </summary>
+        /// <param name="projectId">The ID of the project for which to list tags</param>
+        /// <returns>
+        /// 200 OK
+        /// [{TagDto},{TagDto},..]
+        /// or
+        /// 404 Not Found : if the project or tags are not found
+        /// </returns>
+        /// <example>
+        /// GET: api/Projects/ListTagsForProject/5 -> [{TagDto},{TagDto},..]
+        /// </example>
+       
         [HttpGet(template: "ListTagsForProject/{projectId}")]
         public async Task<ActionResult<IEnumerable<TagDto>>> ListTagsForProject(int projectId)
         {

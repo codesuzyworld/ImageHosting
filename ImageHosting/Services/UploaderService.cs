@@ -42,6 +42,7 @@ namespace ImageHosting.Services
         }
 
         // Add a new uploader
+        // This method is not used due to authentication not implemented yet
         public async Task<ServiceResponse> AddUploader(UploaderDto uploaderDto)
         {
             ServiceResponse response = new();
@@ -60,7 +61,8 @@ namespace ImageHosting.Services
             return response;
         }
 
-        // Update an existing uploader
+        // Update an existing uploader 
+        // This method is not used due to authentication not implemented yet
         public async Task<ServiceResponse> UpdateUploader(UploaderDto uploaderDto)
         {
             ServiceResponse response = new();
@@ -83,7 +85,8 @@ namespace ImageHosting.Services
             return response;
         }
 
-        // Delete an uploader
+        // Delete an uploader by ID
+        // This method is not used due to authentication not implemented yet
         public async Task<ServiceResponse> DeleteUploader(int id)
         {
             ServiceResponse response = new();

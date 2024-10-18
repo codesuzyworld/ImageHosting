@@ -25,6 +25,7 @@
                 <a asp-action="New" asp-controller="ImagePage" asp-route-projectId="@Model.Project.ProjectId" class="btn btn-primary">Add Image</a>
             </div>
 
+
             @if (Model.ProjectImages != null && Model.ProjectImages.Any())
             {
                 <table class="table table-bordered table-striped">

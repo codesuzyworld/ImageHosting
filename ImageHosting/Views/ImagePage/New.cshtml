@@ -16,6 +16,7 @@
             <div class="form-group">
                 <label asp-for="FileName" class="control-label"></label>
                 <input asp-for="FileName" class="form-control" />
+                <!-- If No image name is inputed error will be displayed -->
                 <span asp-validation-for="FileName" class="text-danger"></span>
             </div>
 
@@ -25,6 +26,7 @@
             <div class="form-group">
                 <label for="ImageFile">Select Image File</label>
                 <input type="file" name="ImageFile" class="form-control" />
+                <!-- I cannot seem to get the error display for the imageupload field working... it's probably because of it being IForm? -->
             </div>
 
             <div class="form-group">

@@ -22,9 +22,11 @@
                 <input asp-for="ProjectDescription" class="form-control" />
                 <span asp-validation-for="ProjectDescription" class="text-danger"></span>
             </div>
+
+            <!-- Dropdown for Uploader -->
             <div class="form-group">
-                <label asp-for="UploaderId" class="control-label"></label>
-                <input asp-for="UploaderId" class="form-control" />
+                <label asp-for="UploaderId" class="control-label">Uploader</label>
+                <select asp-for="UploaderId" asp-items="ViewBag.Uploaders" class="form-control"></select>
                 <span asp-validation-for="UploaderId" class="text-danger"></span>
             </div>
 

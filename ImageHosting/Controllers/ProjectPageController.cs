@@ -3,6 +3,7 @@ using ImageHosting.Interface;
 using ImageHosting.Models;
 using ImageHosting.Models.ViewModels;
 using ImageHosting.Services;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ImageHosting.Controllers
 {
@@ -11,13 +12,15 @@ namespace ImageHosting.Controllers
         private readonly IProjectService _projectService;
         private readonly IImageService _imageService;
         private readonly ITagService _tagService;
+        private readonly IUploaderService _uploaderService;
 
         // dependency injection of service interface
-        public ProjectPageController(IProjectService ProjectService, IImageService ImageService, ITagService TagService)
+        public ProjectPageController(IProjectService ProjectService, IImageService ImageService, ITagService TagService, IUploaderService UploaderService)
         {
             _projectService = ProjectService;
             _imageService = ImageService;
             _tagService = TagService;
+            _uploaderService = UploaderService;
         }
 
         public IActionResult Index()
@@ -65,8 +68,11 @@ namespace ImageHosting.Controllers
         }
 
         // GET ProjectPage/New
-        public ActionResult New()
+        public async Task<IActionResult> New()
         {
+            var uploaders = await _uploaderService.ListUploaders();
+            //I would like to load in the data for the uploader's drop down in the create project page
+            ViewBag.Uploaders = new SelectList(uploaders, "UploaderID", "UploaderName");
             return View();
         }
 
@@ -78,13 +84,16 @@ namespace ImageHosting.Controllers
 
             if (response.Status == ServiceResponse.ServiceStatus.Created)
             {
-
                 return RedirectToAction("Details", "ProjectPage", new { id = response.CreatedId });
             }
             else
             {
-                return View("Error", new ErrorViewModel() { Errors = response.Messages });
+                //Loading the data from uploaders
+                var uploaders = await _uploaderService.ListUploaders();
+                ViewBag.Uploaders = new SelectList(uploaders, "UploaderID", "UploaderName");
+                return View(ProjectDto);
             }
+
         }
 
 
@@ -97,10 +106,11 @@ namespace ImageHosting.Controllers
             {
                 return View("Error");
             }
-            else
-            {
-                return View(ProjectDto);
-            }
+
+            // Populate the uploader dropdown for editing
+            var uploaders = await _uploaderService.ListUploaders();
+            ViewBag.Uploaders = new SelectList(uploaders, "UploaderID", "UploaderName", ProjectDto.UploaderId);
+            return View(ProjectDto);
         }
 
         //POST ProjectPage/Update/{id}
@@ -115,7 +125,9 @@ namespace ImageHosting.Controllers
             }
             else
             {
-                return View("Error", new ErrorViewModel() { Errors = response.Messages });
+                var uploaders = await _uploaderService.ListUploaders();
+                ViewBag.Uploaders = new SelectList(uploaders, "UploaderID", "UploaderName", ProjectDto.UploaderId);
+                return View(ProjectDto);
             }
         }
 
@@ -185,6 +197,7 @@ namespace ImageHosting.Controllers
 
             return RedirectToAction("Details", new { id = projectId });
         }
+
 
     }
 }
